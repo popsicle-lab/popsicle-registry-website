@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { registryData } from '../../data/registry-data';
 
 export default function PackageDetailPage() {
@@ -34,9 +35,9 @@ function PackageDetailInner() {
 
   return (
     <div className="content">
-      <a href="/" className="detail-back">
+      <Link href="/" className="detail-back">
         ← Back to registry
-      </a>
+      </Link>
 
       <div className="detail-layout">
         {/* ── Main column ─────────────────────────────────────── */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { registryData } from '../data/registry-data';
 import type { Package } from './registry';
 
@@ -126,7 +127,7 @@ export default function HomePage() {
 
 function PackageCard({ pkg }: { pkg: Package }) {
   return (
-    <a href={`/package?name=${pkg.name}`} className="pkg-card">
+    <Link href={`/package?name=${pkg.name}`} className="pkg-card">
       <div className="pkg-header">
         <span className="pkg-name">{pkg.name}</span>
         <span className={`badge badge-${pkg.type}`}>{pkg.type}</span>
@@ -162,6 +163,6 @@ function PackageCard({ pkg }: { pkg: Package }) {
           )}
         </div>
       )}
-    </a>
+    </Link>
   );
 }

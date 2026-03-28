@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Popsicle Registry — Modules & Tools for Spec-Driven Development',
@@ -21,11 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <nav className="navbar">
           <div className="nav-inner">
-            <a href="/" className="nav-brand">
+            <Link href="/" className="nav-brand">
               <span className="nav-icon">🍦</span>
               <span className="nav-title">Popsicle</span>
               <span className="nav-registry">Registry</span>
-            </a>
+            </Link>
             <div className="nav-links">
               <a href="https://github.com/popsicle-lab/popsicle" target="_blank" rel="noopener">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
