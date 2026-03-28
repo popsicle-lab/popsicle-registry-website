@@ -26,19 +26,16 @@ export interface Package {
   versions: PackageVersion[];
 }
 
-export interface RegistryData {
-  packages: Package[];
-  generatedAt: string;
+export interface RegistryStats {
+  totalPackages: number;
+  totalModules: number;
+  totalTools: number;
+  totalSkills: number;
+  totalPipelines: number;
 }
 
-let _cache: RegistryData | null = null;
-
-export async function getRegistryData(): Promise<RegistryData> {
-  if (_cache) return _cache;
-
-  // In static export mode, this file is generated at build time
-  // by scripts/generate-index.mjs and placed in public/
-  const res = await fetch('/registry-data.json');
-  _cache = (await res.json()) as RegistryData;
-  return _cache;
+export interface RegistryData {
+  packages: Package[];
+  stats: RegistryStats;
+  generatedAt: string;
 }

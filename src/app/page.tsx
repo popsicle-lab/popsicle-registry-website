@@ -1,30 +1,20 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import type { Package, RegistryData } from './registry';
+import { useState, useMemo } from 'react';
+import { registryData } from '../data/registry-data';
+import type { Package } from './registry';
 
 type Filter = 'all' | 'module' | 'tool';
 
 export default function HomePage() {
-  const [data, setData] = useState<RegistryData | null>(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
 
-  useEffect(() => {
-    fetch('/registry-data.json')
-      .then((r) => r.json())
-      .then((d) => setData(d))
-      .catch(() => setData({ packages: [], generatedAt: '' }));
-  }, []);
+  const { packages, stats } = registryData;
 
   const filtered = useMemo(() => {
-    if (!data) return [];
-    let pkgs = data.packages;
-
-    if (filter !== 'all') {
-      pkgs = pkgs.filter((p) => p.type === filter);
-    }
-
+    let pkgs = packages;
+    if (filter !== 'all') pkgs = pkgs.filter((p) => p.type === filter);
     if (query.trim()) {
       const q = query.toLowerCase();
       pkgs = pkgs.filter(
@@ -36,101 +26,139 @@ export default function HomePage() {
           p.pipelines.some((s) => s.toLowerCase().includes(q))
       );
     }
-
     return pkgs;
-  }, [data, query, filter]);
-
-  const stats = useMemo(() => {
-    if (!data) return { total: 0, modules: 0, tools: 0 };
-    return {
-      total: data.packages.length,
-      modules: data.packages.filter((p) => p.type === 'module').length,
-      tools: data.packages.filter((p) => p.type === 'tool').length,
-    };
-  }, [data]);
-
-  if (!data) {
-    return <div className="empty-state">Loading registry...</div>;
-  }
+  }, [packages, query, filter]);
 
   return (
     <>
-      <div className="stat-grid" style={{ marginBottom: '2rem' }}>
-        <div className="stat-card">
-          <div className="number">{stats.total}</div>
-          <div className="label">Packages</div>
-        </div>
-        <div className="stat-card">
-          <div className="number">{stats.modules}</div>
-          <div className="label">Modules</div>
-        </div>
-        <div className="stat-card">
-          <div className="number">{stats.tools}</div>
-          <div className="label">Tools</div>
-        </div>
-      </div>
+      {/* ── Hero ──────────────────────────────────────────────── */}
+      <section className="hero">
+        <div className="hero-inner">
+          <h1>Popsicle Registry</h1>
+          <p>
+            Discover modules, skills, pipelines &amp; tools for spec-driven development.
+            Install with a single command.
+          </p>
 
-      <div className="search-section">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search packages..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <div className="search-wrapper">
+            <svg
+              className="search-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search packages, skills, pipelines…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+            />
+          </div>
+
+          <div className="stats-row">
+            <div className="stat-item">
+              <div className="stat-number accent">{stats.totalPackages}</div>
+              <div className="stat-label">Packages</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number pink">{stats.totalModules}</div>
+              <div className="stat-label">Modules</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number orange">{stats.totalTools}</div>
+              <div className="stat-label">Tools</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number green">{stats.totalSkills}</div>
+              <div className="stat-label">Skills</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number purple">{stats.totalPipelines}</div>
+              <div className="stat-label">Pipelines</div>
+            </div>
+          </div>
         </div>
-        <div className="filters">
+      </section>
+
+      {/* ── Content ───────────────────────────────────────────── */}
+      <div className="content">
+        <div className="filter-bar">
           {(['all', 'module', 'tool'] as Filter[]).map((f) => (
             <button
               key={f}
-              className={filter === f ? 'active' : ''}
+              className={`filter-btn ${filter === f ? 'active' : ''}`}
               onClick={() => setFilter(f)}
             >
-              {f === 'all' ? 'All' : f === 'module' ? 'Modules' : 'Tools'}
+              {f === 'all' ? '✦ All' : f === 'module' ? '📦 Modules' : '🔧 Tools'}
             </button>
           ))}
+          <span className="filter-count">
+            {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
+          </span>
         </div>
-      </div>
 
-      {filtered.length === 0 ? (
-        <div className="empty-state">
-          <p>No packages found.</p>
-        </div>
-      ) : (
-        <div className="package-grid">
-          {filtered.map((pkg) => (
-            <PackageCard key={pkg.name} pkg={pkg} />
-          ))}
-        </div>
-      )}
+        {filtered.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🔍</div>
+            <p>No packages match your search.</p>
+          </div>
+        ) : (
+          <div className="pkg-grid">
+            {filtered.map((pkg) => (
+              <PackageCard key={pkg.name} pkg={pkg} />
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
 function PackageCard({ pkg }: { pkg: Package }) {
   return (
-    <a href={`/package?name=${pkg.name}`} className="package-card">
-      <h3>
-        <span className="name">{pkg.name}</span>
-        <span className={`badge ${pkg.type}`}>{pkg.type}</span>
-        <span className="version">v{pkg.latestVersion}</span>
-      </h3>
-      <p className="desc">{pkg.description}</p>
-
-      {(pkg.skills.length > 0 || pkg.pipelines.length > 0 || pkg.keywords.length > 0) && (
-        <div className="meta">
-          {pkg.keywords.map((k) => (
+    <a href={`/package?name=${pkg.name}`} className="pkg-card">
+      <div className="pkg-header">
+        <span className="pkg-name">{pkg.name}</span>
+        <span className={`badge badge-${pkg.type}`}>{pkg.type}</span>
+        <span className="pkg-version">v{pkg.latestVersion}</span>
+      </div>
+      <p className="pkg-desc">{pkg.description}</p>
+      <div className="pkg-meta">
+        {pkg.skills.length > 0 && (
+          <span className="pkg-stat">
+            <span className="pkg-stat-icon">✦</span> {pkg.skills.length} skills
+          </span>
+        )}
+        {pkg.pipelines.length > 0 && (
+          <span className="pkg-stat">
+            <span className="pkg-stat-icon">⟶</span> {pkg.pipelines.length} pipelines
+          </span>
+        )}
+        {pkg.author && (
+          <span className="pkg-stat">
+            <span className="pkg-stat-icon">by</span> {pkg.author}
+          </span>
+        )}
+      </div>
+      {pkg.keywords.length > 0 && (
+        <div className="pkg-tags">
+          {pkg.keywords.slice(0, 6).map((k) => (
             <span key={k} className="tag">
               {k}
             </span>
           ))}
-          {pkg.skills.slice(0, 4).map((s) => (
-            <span key={s} className="tag">
-              skill:{s}
-            </span>
-          ))}
-          {pkg.skills.length > 4 && (
-            <span className="tag">+{pkg.skills.length - 4} skills</span>
+          {pkg.keywords.length > 6 && (
+            <span className="tag">+{pkg.keywords.length - 6}</span>
           )}
         </div>
       )}

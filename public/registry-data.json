@@ -1,62 +1,48 @@
 {
   "packages": [
     {
-      "name": "draw-diagram",
-      "type": "tool",
-      "description": "Generate Mermaid diagrams from natural language descriptions",
-      "author": "popsicle-lab",
-      "repository": "https://github.com/popsicle-lab/popsicle-tools",
-      "keywords": [
-        "diagram",
-        "mermaid",
-        "visualization",
-        "flowchart",
-        "sequence"
-      ],
-      "latestVersion": "1.0.0",
-      "skills": [],
-      "pipelines": [],
-      "tools": [],
-      "deps": [],
-      "versions": [
-        {
-          "version": "1.0.0",
-          "source": "github:popsicle-lab/popsicle-tools//draw-diagram#v1.0.0",
-          "yanked": false,
-          "publishedAt": "2026-03-15T00:00:00Z"
-        }
-      ]
-    },
-    {
       "name": "spec-development",
       "type": "module",
-      "description": "Spec-driven development module with full SDLC pipeline",
-      "author": "popsicle-lab",
+      "description": "Spec-driven development workflow — product debate, PRD, RFC, ADR, implementation, and testing",
+      "author": "curtiseng",
       "repository": "https://github.com/popsicle-lab/popsicle-spec-development",
       "keywords": [
         "sdlc",
         "spec",
         "development",
         "planning",
-        "review"
+        "testing",
+        "prd",
+        "rfc",
+        "adr",
+        "debate"
       ],
-      "latestVersion": "1.0.0",
+      "latestVersion": "0.1.0",
       "skills": [
-        "domain-analysis",
-        "product-prd",
-        "tech-rfc",
-        "tech-adr",
-        "test-spec",
-        "security-review",
-        "implementation",
+        "adr-writer",
+        "api-test-codegen",
+        "api-test-spec",
         "arch-debate",
-        "product-debate"
+        "bug-tracker",
+        "domain-analysis",
+        "e2e-test-codegen",
+        "e2e-test-spec",
+        "implementation",
+        "prd-writer",
+        "priority-test-spec",
+        "product-debate",
+        "rfc-writer",
+        "test-report",
+        "ui-test",
+        "ui-test-codegen",
+        "unit-test-codegen"
       ],
       "pipelines": [
+        "design-only",
         "full-sdlc",
+        "impl-test",
         "tech-sdlc",
-        "minimal-sdlc",
-        "planning-only"
+        "test-only"
       ],
       "tools": [],
       "deps": [],
@@ -65,16 +51,17 @@
           "version": "0.1.0",
           "source": "github:popsicle-lab/popsicle-spec-development#v0.1.0",
           "yanked": false,
-          "publishedAt": "2026-03-01T00:00:00Z"
-        },
-        {
-          "version": "1.0.0",
-          "source": "github:popsicle-lab/popsicle-spec-development#v1.0.0",
-          "yanked": false,
-          "publishedAt": "2026-03-28T00:00:00Z"
+          "publishedAt": "2026-03-28T09:00:00Z"
         }
       ]
     }
   ],
-  "generatedAt": "2026-03-28T08:17:37.774Z"
+  "stats": {
+    "totalPackages": 1,
+    "totalModules": 1,
+    "totalTools": 0,
+    "totalSkills": 17,
+    "totalPipelines": 5
+  },
+  "generatedAt": "2026-03-28T09:25:17.132Z"
 }

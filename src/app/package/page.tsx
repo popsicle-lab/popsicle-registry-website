@@ -1,37 +1,31 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import type { Package, RegistryData } from '../registry';
+import { registryData } from '../../data/registry-data';
 
 export default function PackageDetailPage() {
   return (
-    <Suspense fallback={<div className="empty-state">Loading...</div>}>
+    <Suspense fallback={<div className="empty-state">Loading…</div>}>
       <PackageDetailInner />
     </Suspense>
   );
 }
 
 function PackageDetailInner() {
-  const searchParams = useSearchParams();
-  const name = searchParams.get('name');
-  const [pkg, setPkg] = useState<Package | null>(null);
-  const [loading, setLoading] = useState(true);
+  const name = useSearchParams().get('name');
+  const pkg = registryData.packages.find((p) => p.name === name);
 
-  useEffect(() => {
-    if (!name) return;
-    fetch('/registry-data.json')
-      .then((r) => r.json())
-      .then((data: RegistryData) => {
-        const found = data.packages.find((p) => p.name === name) || null;
-        setPkg(found);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [name]);
-
-  if (loading) return <div className="empty-state">Loading...</div>;
-  if (!pkg) return <div className="empty-state">Package &quot;{name}&quot; not found.</div>;
+  if (!pkg) {
+    return (
+      <div className="content">
+        <div className="empty-state">
+          <div className="empty-icon">📦</div>
+          <p>Package &ldquo;{name}&rdquo; not found.</p>
+        </div>
+      </div>
+    );
+  }
 
   const installCmd =
     pkg.type === 'module'
@@ -39,109 +33,146 @@ function PackageDetailInner() {
       : `popsicle tool install ${pkg.name}`;
 
   return (
-    <div className="package-detail">
-      <h1>
-        <span>{pkg.name}</span>
-        <span className={`badge ${pkg.type}`}>{pkg.type}</span>
-      </h1>
-      <p className="desc">{pkg.description}</p>
+    <div className="content">
+      <a href="/" className="detail-back">
+        ← Back to registry
+      </a>
 
-      <div className="detail-section">
-        <h2>Install</h2>
-        <div className="install-cmd">{installCmd}</div>
-      </div>
+      <div className="detail-layout">
+        {/* ── Main column ─────────────────────────────────────── */}
+        <div className="detail-main">
+          <div className="detail-title">
+            <h1>{pkg.name}</h1>
+            <span className={`badge badge-${pkg.type}`}>{pkg.type}</span>
+          </div>
+          <p className="detail-desc">{pkg.description}</p>
 
-      {pkg.author && (
-        <div className="detail-section">
-          <h2>Author</h2>
-          <p>{pkg.author}</p>
-        </div>
-      )}
+          <div className="install-box">{installCmd}</div>
 
-      {pkg.repository && (
-        <div className="detail-section">
-          <h2>Repository</h2>
-          <p>
-            <a href={pkg.repository} style={{ color: 'var(--accent)' }}>
-              {pkg.repository}
-            </a>
-          </p>
-        </div>
-      )}
+          {pkg.skills.length > 0 && (
+            <div className="detail-section">
+              <div className="detail-section-title">
+                ✦ Skills <span className="count">({pkg.skills.length})</span>
+              </div>
+              <div className="detail-grid">
+                {pkg.skills.map((s) => (
+                  <span key={s} className="skill-tag">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {pkg.skills.length > 0 && (
-        <div className="detail-section">
-          <h2>Skills ({pkg.skills.length})</h2>
-          <div className="contents-list">
-            {pkg.skills.map((s) => (
-              <span key={s} className="tag">
-                {s}
-              </span>
-            ))}
+          {pkg.pipelines.length > 0 && (
+            <div className="detail-section">
+              <div className="detail-section-title">
+                ⟶ Pipelines <span className="count">({pkg.pipelines.length})</span>
+              </div>
+              <div className="detail-grid">
+                {pkg.pipelines.map((p) => (
+                  <span key={p} className="pipeline-tag">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {pkg.deps.length > 0 && (
+            <div className="detail-section">
+              <div className="detail-section-title">
+                Dependencies <span className="count">({pkg.deps.length})</span>
+              </div>
+              <div className="detail-grid">
+                {pkg.deps.map((d) => (
+                  <span key={d.name} className="tag">
+                    {d.name}
+                    <span style={{ opacity: 0.6, marginLeft: '0.3rem' }}>({d.kind})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="detail-section">
+            <div className="detail-section-title">
+              Versions <span className="count">({pkg.versions.length})</span>
+            </div>
+            <ul className="version-list">
+              {[...pkg.versions].reverse().map((v) => (
+                <li key={v.version} className="version-item">
+                  <span>
+                    <span className="version-num">v{v.version}</span>
+                    {v.yanked && <span className="version-yanked">yanked</span>}
+                  </span>
+                  <span className="version-date">
+                    {v.publishedAt
+                      ? new Date(v.publishedAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                      : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      )}
 
-      {pkg.pipelines.length > 0 && (
-        <div className="detail-section">
-          <h2>Pipelines ({pkg.pipelines.length})</h2>
-          <div className="contents-list">
-            {pkg.pipelines.map((p) => (
-              <span key={p} className="tag">
-                {p}
-              </span>
-            ))}
+        {/* ── Sidebar ─────────────────────────────────────────── */}
+        <aside className="detail-sidebar">
+          <div className="sidebar-card">
+            <div className="sidebar-section">
+              <div className="sidebar-label">Version</div>
+              <div className="sidebar-value" style={{ fontFamily: 'var(--mono)' }}>
+                v{pkg.latestVersion}
+              </div>
+            </div>
+
+            {pkg.author && (
+              <div className="sidebar-section">
+                <div className="sidebar-label">Author</div>
+                <div className="sidebar-value">{pkg.author}</div>
+              </div>
+            )}
+
+            {pkg.repository && (
+              <div className="sidebar-section">
+                <div className="sidebar-label">Repository</div>
+                <div className="sidebar-value">
+                  <a href={pkg.repository} target="_blank" rel="noopener">
+                    {pkg.repository.replace('https://github.com/', '')}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className="sidebar-section">
+              <div className="sidebar-label">Install</div>
+              <div
+                className="sidebar-value"
+                style={{ fontFamily: 'var(--mono)', fontSize: '0.8rem', color: 'var(--green)' }}
+              >
+                {installCmd}
+              </div>
+            </div>
+
+            {pkg.keywords.length > 0 && (
+              <div className="sidebar-section">
+                <div className="sidebar-label">Keywords</div>
+                <div className="detail-grid" style={{ marginTop: '0.25rem' }}>
+                  {pkg.keywords.map((k) => (
+                    <span key={k} className="tag">
+                      {k}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-
-      {pkg.deps.length > 0 && (
-        <div className="detail-section">
-          <h2>Dependencies</h2>
-          <div className="contents-list">
-            {pkg.deps.map((d) => (
-              <span key={d.name} className="tag">
-                {d.name} ({d.kind})
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {pkg.keywords.length > 0 && (
-        <div className="detail-section">
-          <h2>Keywords</h2>
-          <div className="contents-list">
-            {pkg.keywords.map((k) => (
-              <span key={k} className="tag">
-                {k}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="detail-section">
-        <h2>Versions ({pkg.versions.length})</h2>
-        <ul className="version-list">
-          {[...pkg.versions].reverse().map((v) => (
-            <li key={v.version}>
-              <span>
-                v{v.version}
-                {v.yanked && <span className="yanked"> (yanked)</span>}
-              </span>
-              <span style={{ color: 'var(--fg-muted)', fontSize: '0.85rem' }}>
-                {v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : ''}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div style={{ marginTop: '2rem' }}>
-        <a href="/" style={{ color: 'var(--accent)' }}>
-          ← Back to all packages
-        </a>
+        </aside>
       </div>
     </div>
   );
