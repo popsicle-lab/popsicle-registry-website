@@ -1,10 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Package, RegistryData } from '../registry';
 
 export default function PackageDetailPage() {
+  return (
+    <Suspense fallback={<div className="empty-state">Loading...</div>}>
+      <PackageDetailInner />
+    </Suspense>
+  );
+}
+
+function PackageDetailInner() {
   const searchParams = useSearchParams();
   const name = searchParams.get('name');
   const [pkg, setPkg] = useState<Package | null>(null);
