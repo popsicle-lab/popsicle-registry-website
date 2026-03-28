@@ -33,7 +33,7 @@ jobs:
 
       - run: npm ci
       - run: REGISTRY_PATH=popsicle-registry npm run generate-index
-      - run: NEXT_PUBLIC_BASE_PATH=/popsicle-registry-website npm run build
+      - run: NEXT_PUBLIC_BASE_PATH= npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
