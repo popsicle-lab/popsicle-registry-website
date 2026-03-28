@@ -1,0 +1,80 @@
+{
+  "packages": [
+    {
+      "name": "draw-diagram",
+      "type": "tool",
+      "description": "Generate Mermaid diagrams from natural language descriptions",
+      "author": "popsicle-lab",
+      "repository": "https://github.com/popsicle-lab/popsicle-tools",
+      "keywords": [
+        "diagram",
+        "mermaid",
+        "visualization",
+        "flowchart",
+        "sequence"
+      ],
+      "latestVersion": "1.0.0",
+      "skills": [],
+      "pipelines": [],
+      "tools": [],
+      "deps": [],
+      "versions": [
+        {
+          "version": "1.0.0",
+          "source": "github:popsicle-lab/popsicle-tools//draw-diagram#v1.0.0",
+          "yanked": false,
+          "publishedAt": "2026-03-15T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "spec-development",
+      "type": "module",
+      "description": "Spec-driven development module with full SDLC pipeline",
+      "author": "popsicle-lab",
+      "repository": "https://github.com/popsicle-lab/popsicle-spec-development",
+      "keywords": [
+        "sdlc",
+        "spec",
+        "development",
+        "planning",
+        "review"
+      ],
+      "latestVersion": "1.0.0",
+      "skills": [
+        "domain-analysis",
+        "product-prd",
+        "tech-rfc",
+        "tech-adr",
+        "test-spec",
+        "security-review",
+        "implementation",
+        "arch-debate",
+        "product-debate"
+      ],
+      "pipelines": [
+        "full-sdlc",
+        "tech-sdlc",
+        "minimal-sdlc",
+        "planning-only"
+      ],
+      "tools": [],
+      "deps": [],
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "github:popsicle-lab/popsicle-spec-development#v0.1.0",
+          "yanked": false,
+          "publishedAt": "2026-03-01T00:00:00Z"
+        },
+        {
+          "version": "1.0.0",
+          "source": "github:popsicle-lab/popsicle-spec-development#v1.0.0",
+          "yanked": false,
+          "publishedAt": "2026-03-28T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "generatedAt": "2026-03-28T08:17:37.774Z"
+}
