@@ -3,11 +3,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
   repository_dispatch:
     types: [registry-updated]
   schedule:
-    # Daily rebuild at 00:00 UTC as a safety net
-    - cron: '0 0 * * *'
+    # Rebuild every 6 hours as a safety net
+    - cron: '0 */6 * * *'
 
 permissions:
   contents: read
