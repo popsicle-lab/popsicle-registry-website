@@ -7,7 +7,12 @@ export interface PackageVersion {
 
 export interface PackageDep {
   name: string;
-  req?: string;
+  /**
+   * Semver requirement string. The popsicle registry emits JSON `null`
+   * (from Rust `Option::None`) when a dep has no pinned version, so we
+   * explicitly allow `null` here in addition to absence.
+   */
+  req?: string | null;
   kind: 'module' | 'tool';
 }
 
